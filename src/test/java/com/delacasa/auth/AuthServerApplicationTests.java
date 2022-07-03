@@ -8,6 +8,7 @@ class AuthServerApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }

@@ -1,23 +1,25 @@
-package com.delacasa.auth;
+package com.delacasa.auth.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Immutable;
 
 import lombok.Getter;
-import lombok.Setter;
 
 /**
- * The persistent class for the resource database table.
+ * The persistent class for the account_status database table.
  * 
  */
 @Entity
+@Table(name = "account_status")
 @Getter
-@Setter
-public class AppResource {
-	private static final long serialVersionUID = 1L;
+@Immutable
+public class AccountStatus {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

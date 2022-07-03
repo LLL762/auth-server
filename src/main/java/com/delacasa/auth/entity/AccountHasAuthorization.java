@@ -1,5 +1,8 @@
-package com.delacasa.auth;
+package com.delacasa.auth.entity;
 
+import static javax.persistence.FetchType.LAZY;
+
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -7,8 +10,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Immutable;
+
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * The persistent class for the account_has_authorization database table.
@@ -16,23 +20,24 @@ import lombok.Setter;
  */
 @Entity
 @Table(name = "account_has_authorization")
+@Immutable
 @Getter
-@Setter
 public class AccountHasAuthorization {
 
 	@EmbeddedId
 	private AccountHasAuthorizationPK id;
 
-	@ManyToOne
-	@JoinColumn
-	@MapsId("resourceId")
-	private AppResource resource;
+	@ManyToOne(fetch = LAZY)
+	@JoinColumn(name = "authorization_id")
+	@MapsId("authorizationId")
+	private AccountAuthorization authorization;
 
-	@ManyToOne
-	@JoinColumn
+	@ManyToOne(fetch = LAZY)
+	@JoinColumn(name = "account_id")
 	@MapsId("accountId")
 	private Account account;
 
+	@Column(name = "is_restriction")
 	private boolean isRestriction;
 
 }

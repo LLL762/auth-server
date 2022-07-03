@@ -1,7 +1,5 @@
-package com.delacasa.auth;
+package com.delacasa.auth.entity;
 
-import static javax.persistence.CascadeType.MERGE;
-import static javax.persistence.CascadeType.REMOVE;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -12,16 +10,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 
+import org.hibernate.annotations.Immutable;
+
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * The persistent class for the user database table.
  * 
  */
 @Entity
+@Immutable
 @Getter
-@Setter
 public class AppUser {
 
 	@Id
@@ -34,7 +33,7 @@ public class AppUser {
 	private String name;
 
 	// bi-directional one-to-one association to Account
-	@OneToOne(fetch = LAZY, cascade = { MERGE, REMOVE })
+	@OneToOne(fetch = LAZY)
 	@JoinColumn(name = "user-id")
 	private Account account;
 
