@@ -6,7 +6,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 
@@ -34,7 +33,6 @@ public class AppUser {
 
 	// bi-directional one-to-one association to Account
 	@OneToOne(fetch = LAZY)
-	@JoinColumn(name = "user-id")
 	private Account account;
 
 }
