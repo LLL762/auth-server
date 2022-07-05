@@ -1,9 +1,13 @@
 package com.delacasa.auth.jwt;
 
+import static java.time.Instant.now;
+
 import java.text.ParseException;
 import java.util.Date;
 
-import com.delacasa.auth.config.JwtConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.delacasa.auth.exception.JwtTokenException;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JOSEException;
@@ -22,9 +26,6 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class JwtServiceImpl implements JwtService<SignedJWT> {
@@ -49,10 +50,10 @@ public class JwtServiceImpl implements JwtService<SignedJWT> {
 	}
 
 	@Override
-	public String createToken(final String subject) {
+	public String createToken(final JwtClaimsModel claimsModel) {
 
 		try {
-			return generateJWE(generateJWS(subject)).serialize();
+			return generateJWE(generateJWS(claimsModel)).serialize();
 		} catch (JOSEException e) {
 			throw new JwtTokenException(":(");
 		}
@@ -97,11 +98,14 @@ public class JwtServiceImpl implements JwtService<SignedJWT> {
 
 	}
 
-	private SignedJWT generateJWS(final String subject) throws JOSEException {
+	private SignedJWT generateJWS(final JwtClaimsModel claimsModel) throws JOSEException {
 
 		final SignedJWT output = new SignedJWT(
-				new JWSHeader.Builder(JWSAlgorithm.RS256).keyID(senderJWK.getKeyID()).build(),
-				setUpClaims(subject));
+				new JWSHeader.Builder(JWSAlgorithm.RS256)
+															.keyID(senderJWK.getKeyID())
+															.build(),
+
+				setUpClaims(claimsModel));
 
 		output.sign(new RSASSASigner(senderJWK));
 
@@ -109,11 +113,18 @@ public class JwtServiceImpl implements JwtService<SignedJWT> {
 
 	}
 
-	private JWTClaimsSet setUpClaims(final String subject) {
+	private JWTClaimsSet setUpClaims(final JwtClaimsModel claimsModel) {
 
-		return new JWTClaimsSet.Builder()	.subject(subject)
-											.issueTime(new Date())
+		return new JWTClaimsSet.Builder()	.subject(claimsModel.getSubject())
 											.issuer(jwtConfig.getIssuer())
+											.audience(jwtConfig.getAudience())
+											.issueTime(new Date())
+											.expirationTime(
+													Date.from(now().plusSeconds(jwtConfig.getExpirationInSeconds())))
+											.claim(jwtConfig.getClaimIp(), claimsModel.getIpAdress())
+											.claim(jwtConfig.getClaimRole(), claimsModel.getRole())
+											.claim(jwtConfig.getClaimAuthorizations(), claimsModel.getAuthorizations())
+											.claim(jwtConfig.getClaimRestrictions(), claimsModel.getRestrictions())
 											.build();
 
 	}
