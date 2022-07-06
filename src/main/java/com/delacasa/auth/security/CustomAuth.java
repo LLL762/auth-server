@@ -1,6 +1,7 @@
 package com.delacasa.auth.security;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,47 +11,53 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomAuth implements Authentication {
 
-	// private final AuthRequestDetails details;
+	private final AuthRequestDetails requestDetails;
+	private Set<String> details;
+	private Set<? extends GrantedAuthority> authorities;
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+
+		return requestDetails.getUsernameOrEmail();
+	}
+
+	@Override
+	public String getCredentials() {
+
+		return requestDetails.getPassword();
+	}
+
+	@Override
+	public String getPrincipal() {
+
+		return requestDetails.getUsernameOrEmail();
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
+
+		return authorities;
+	}
+
+	public void setAuthorities(Set<? extends GrantedAuthority> authorities) {
+
+		this.authorities = authorities;
 	}
 
 	@Override
-	public Object getCredentials() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public Set<String> getDetails() {
 
-	@Override
-	public Object getDetails() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object getPrincipal() {
-		// TODO Auto-generated method stub
-		return null;
+		return details;
 	}
 
 	@Override
 	public boolean isAuthenticated() {
-		// TODO Auto-generated method stub
-		return false;
+
+		return true;
 	}
 
 	@Override
 	public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
 
 	}
 

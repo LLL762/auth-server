@@ -2,8 +2,6 @@ package com.delacasa.auth.security;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
-import com.delacasa.auth.config.AppLoginConfig;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +11,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.delacasa.auth.config.AppLoginConfig;
+import com.delacasa.auth.jwt.JwtService;
+import com.delacasa.auth.service.AccountService;
+
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -21,22 +23,23 @@ public class SecurityConfig {
 
 	private final AppLoginConfig loginConfig;
 	private final AuthenticationConfiguration authConfig;
+	private final AccountService accountService;
+	private final JwtService<?> jwtService;
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 		http.sessionManagement().sessionCreationPolicy(STATELESS)
-				.and()
+			.and()
 
-				.formLogin()
-				.loginProcessingUrl(loginConfig.getUrl())
-				.defaultSuccessUrl(loginConfig.getSuccessUrl())
+			.formLogin()
+			.loginProcessingUrl(loginConfig.getUrl())
+			.defaultSuccessUrl(loginConfig.getSuccessUrl())
 
-				.and()
+			.and()
 
-				.authenticationManager(authManager())
-
-				.addFilter(new UsernameAndPasswordAuthFilter(authManager()))
+			.authenticationManager(authManager())
+			.addFilter(new UsernameAndPasswordAuthFilter(authManager(), jwtService))
 
 		;
 
@@ -50,7 +53,7 @@ public class SecurityConfig {
 
 	@Bean
 	CustomAuthProvider authProvider() {
-		return new CustomAuthProvider(passwordEncoder());
+		return new CustomAuthProvider(passwordEncoder(), accountService);
 
 	}
 
