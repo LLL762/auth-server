@@ -5,9 +5,6 @@ import static java.time.Instant.now;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.delacasa.auth.exception.JwtTokenException;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JOSEException;
@@ -26,6 +23,9 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class JwtServiceImpl implements JwtService<SignedJWT> {
@@ -88,8 +88,8 @@ public class JwtServiceImpl implements JwtService<SignedJWT> {
 	private JWEObject generateJWE(SignedJWT jws) throws JOSEException {
 
 		final JWEObject output = new JWEObject(
-				new JWEHeader.Builder(JWEAlgorithm.RSA_OAEP_256, EncryptionMethod.A256GCM)	.contentType("JWT")
-																							.build(),
+				new JWEHeader.Builder(JWEAlgorithm.RSA_OAEP_256, EncryptionMethod.A256GCM).contentType("JWT")
+						.build(),
 				new Payload(jws));
 
 		output.encrypt(new RSAEncrypter(recipientPublicJWK));
@@ -102,8 +102,8 @@ public class JwtServiceImpl implements JwtService<SignedJWT> {
 
 		final SignedJWT output = new SignedJWT(
 				new JWSHeader.Builder(JWSAlgorithm.RS256)
-															.keyID(senderJWK.getKeyID())
-															.build(),
+						.keyID(senderJWK.getKeyID())
+						.build(),
 
 				setUpClaims(claimsModel));
 
@@ -115,33 +115,35 @@ public class JwtServiceImpl implements JwtService<SignedJWT> {
 
 	private JWTClaimsSet setUpClaims(final JwtClaimsModel claimsModel) {
 
-		return new JWTClaimsSet.Builder()	.subject(claimsModel.getSubject())
-											.issuer(jwtConfig.getIssuer())
-											.audience(jwtConfig.getAudience())
-											.issueTime(new Date())
-											.expirationTime(
-													Date.from(now().plusSeconds(jwtConfig.getExpirationInSeconds())))
-											.claim(jwtConfig.getClaimIp(), claimsModel.getIpAdress())
-											.claim(jwtConfig.getClaimRole(), claimsModel.getRole())
-											.claim(jwtConfig.getClaimAuthorizations(), claimsModel.getAuthorizations())
-											.claim(jwtConfig.getClaimRestrictions(), claimsModel.getRestrictions())
-											.build();
+		return new JWTClaimsSet.Builder()
+
+				.subject(claimsModel.getSubject())
+				.issuer(jwtConfig.getIssuer())
+				.audience(jwtConfig.getAudience())
+				.issueTime(new Date())
+				.expirationTime(
+						Date.from(now().plusSeconds(jwtConfig.getExpirationInSeconds())))
+				.claim(jwtConfig.getClaimIp(), claimsModel.getIpAdress())
+				.claim(jwtConfig.getClaimRole(), claimsModel.getRole())
+				.claim(jwtConfig.getClaimAuthorizations(), claimsModel.getAuthorizations())
+				.claim(jwtConfig.getClaimRestrictions(), claimsModel.getRestrictions())
+				.build();
 
 	}
 
 	private RSAKey generateSenderJwk() throws JOSEException {
 
 		return new RSAKeyGenerator(2048).keyID("123")
-										.keyUse(KeyUse.SIGNATURE)
-										.generate();
+				.keyUse(KeyUse.SIGNATURE)
+				.generate();
 
 	}
 
 	private RSAKey generateRecipientJwk() throws JOSEException {
 
 		return new RSAKeyGenerator(2048).keyID("321")
-										.keyUse(KeyUse.ENCRYPTION)
-										.generate();
+				.keyUse(KeyUse.ENCRYPTION)
+				.generate();
 
 	}
 
