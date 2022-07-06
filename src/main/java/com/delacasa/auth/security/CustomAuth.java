@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomAuth implements Authentication {
 
-	private final AuthRequestDetails details;
+	// private final AuthRequestDetails details;
 
 	@Override
 	public String getName() {
