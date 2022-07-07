@@ -1,12 +1,15 @@
 package com.delacasa.auth.security;
 
+import com.delacasa.auth.entity.Account;
+import com.delacasa.auth.model.AccountStatusEnum;
+import com.delacasa.auth.service.AccountService;
+
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import com.delacasa.auth.entity.Account;
-import com.delacasa.auth.service.AccountService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +25,9 @@ public class CustomAuthProvider implements AuthenticationProvider {
 		final CustomAuth auth = (CustomAuth) authentication;
 		final Account account = accountService.getAccountByUsernameOrMail(auth.getCredentials()).orElseThrow();
 
+		checkStatus(account);
+		checkPassword(auth.getCredentials(), account);
+
 		return auth;
 	}
 
@@ -31,21 +37,37 @@ public class CustomAuthProvider implements AuthenticationProvider {
 		return authentication.equals(CustomAuth.class);
 	}
 
-	private boolean checkStatus(final Account account) {
+	private void checkStatus(final Account account) throws DisabledException {
 
-		return account.getAccountStatus().getName().equals("Robert");
+		switch (AccountStatusEnum.valueOf(account.getStatus().getName())) {
+
+			case OK -> {
+
+			}
+			case BANNED -> {
+				throw new DisabledException("Account banned");
+			}
+			case LOCKED_AUTH -> {
+				// TO DO
+			}
+			case LOCKED_ADMIN -> {
+
+				// TO DO
+
+			}
+
+			default -> throw new IllegalArgumentException();
+		}
 
 	}
 
-	private boolean checkremainingTries(final Account account) {
+	private void checkPassword(final String password, final Account account) {
 
-		return account.getAccountStatus().getName().equals("Robert");
+		if (!encoder.encode(password).equals(account.getPassword())) {
 
-	}
+			throw new BadCredentialsException("Invalid password");
 
-	private boolean checkPassword(final String password, final Account account) {
-
-		return encoder.encode(password).equals(account.getPassword());
+		}
 
 	}
 

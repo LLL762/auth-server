@@ -80,7 +80,7 @@ public class Account {
 	@JoinColumn(name = "status_id")
 	@NotNull
 	@Setter
-	private AccountStatus accountStatus;
+	private AccountStatus status;
 
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "role_id")
