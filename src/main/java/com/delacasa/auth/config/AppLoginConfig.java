@@ -17,5 +17,6 @@ public class AppLoginConfig {
 	private String url;
 	private String successUrl;
 	private String mailRegex;
+	private byte maxTries;
 
 }
