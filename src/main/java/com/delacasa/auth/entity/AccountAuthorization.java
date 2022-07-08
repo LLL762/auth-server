@@ -35,17 +35,17 @@ public class AccountAuthorization {
 	private String name;
 
 	@OneToMany(fetch = LAZY)
-	private Set<AppResource> resources = new HashSet<>();
+	private Set<AppResourceCategory> categories = new HashSet<>();
 
-	public void addResource(final AppResource resource) {
+	public void addResource(final AppResourceCategory category) {
 
-		resources.add(resource);
+		categories.add(category);
 
 	}
 
-	public void removeResource(final AppResource resource) {
+	public void removeResource(final AppResourceCategory category) {
 
-		resources.remove(resource);
+		categories.remove(category);
 
 	}
 

@@ -18,7 +18,7 @@ import lombok.Getter;
 @Entity
 @Immutable
 @Getter
-public class AppResource {
+public class AppResourceCategory {
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
