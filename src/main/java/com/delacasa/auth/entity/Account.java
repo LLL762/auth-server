@@ -60,7 +60,7 @@ public class Account {
 
 	@Column(name = "password")
 	@NotBlank
-	@Size(min = 255, max = 255)
+	@Size(min = 60, max = 60)
 	@ReadOnlyProperty
 	private String password;
 

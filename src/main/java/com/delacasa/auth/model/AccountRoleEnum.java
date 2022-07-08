@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum AccountRoleEnum {
 
-	FREE("FREE"), PREMIUM("PREMIUM"), MODERATOR("MODERATOR"), ADMIN("ADMIN"), GOD("GOD");
+	FREE("FREE_MEMBER"), PREMIUM("PREMIUM_MEMBER"), MODERATOR("MODERATOR"), ADMIN("ADMIN"), GOD("GOD");
 
 	private final String name;
 
