@@ -13,7 +13,8 @@ import org.hibernate.annotations.Immutable;
  */
 @Embeddable
 @Immutable
-public class AccountHasAuthorizationPK implements Serializable {
+public class AccountHasAuthorizationPK
+		implements Serializable {
 
 	private static final long serialVersionUID = 4405919140411314531L;
 

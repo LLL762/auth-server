@@ -2,16 +2,17 @@ package com.delacasa.auth.security;
 
 import javax.transaction.Transactional;
 
-import com.delacasa.auth.entity.Account;
-import com.delacasa.auth.model.AccountStatusEnum;
-import com.delacasa.auth.service.AccountService;
-
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.delacasa.auth.config.AppLoginConfig;
+import com.delacasa.auth.entity.Account;
+import com.delacasa.auth.model.AccountStatusEnum;
+import com.delacasa.auth.service.AccountService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +21,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 	private final PasswordEncoder encoder;
 	private final AccountService accountService;
+	private final AppLoginConfig loginConfig;
 
 	@Override
 	@Transactional
@@ -27,11 +29,13 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 		final CustomAuth auth = (CustomAuth) authentication;
 
-		final Account account = accountService.getAccountByUsernameOrMail(auth.getPrincipal())
-				.orElseThrow(() -> new BadCredentialsException("Username not found"));
+		final Account account = accountService	.getAccountByUsernameOrMail(auth.getPrincipal())
+												.orElseThrow(() -> new BadCredentialsException("Username not found"));
 
 		checkStatus(account);
 		checkPassword(auth.getCredentials(), account);
+
+		auth.setUp(account);
 
 		return auth;
 	}
@@ -46,32 +50,22 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 		switch (AccountStatusEnum.valueOf(account.getStatus().getName())) {
 
-			case OK -> {
+		case OK -> {
 
-			}
-			case BANNED -> {
-				throw new DisabledException("Account banned");
-			}
-			case LOCKED_AUTH -> {
-				// TO DO
-			}
-			case LOCKED_ADMIN -> {
+		}
+		case BANNED -> {
+			throw new DisabledException("Account banned");
+		}
+		case LOCKED_AUTH -> {
+			// TO DO
+		}
+		case LOCKED_ADMIN -> {
 
-				// TO DO
+			// TO DO
 
-			}
-
-			default -> throw new IllegalArgumentException();
 		}
 
-	}
-
-	private void checkRemainingTries(final Account account) {
-
-		if (account.getRemainingTries() <= 0) {
-
-			throw new BadCredentialsException("Invalid password");
-
+		default -> throw new IllegalArgumentException();
 		}
 
 	}
@@ -81,9 +75,15 @@ public class CustomAuthProvider implements AuthenticationProvider {
 		if (!encoder.matches(password, account.getPassword())) {
 
 			throw new BadCredentialsException("Invalid password");
-
 		}
+	}
 
+	private void checkFailedAttempt(final String password, final Account account) {
+
+		if (account.getFailedAttempt() > loginConfig.getMaxTries()) {
+
+			throw new BadCredentialsException("Invalid password");
+		}
 	}
 
 }

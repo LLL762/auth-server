@@ -26,8 +26,6 @@ public class UsernameAndPasswordAuthFilter extends UsernamePasswordAuthenticatio
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
 
-		System.out.println(request.getContentLength());
-
 		return authenticationManager.authenticate(new CustomAuth(new AuthRequestDetails(request)));
 	}
 
@@ -42,7 +40,7 @@ public class UsernameAndPasswordAuthFilter extends UsernamePasswordAuthenticatio
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException failed) throws IOException, ServletException {
-		// TODO Auto-generated method stub
+
 		super.unsuccessfulAuthentication(request, response, failed);
 	}
 

@@ -15,4 +15,7 @@ public enum AccountStatusEnum {
 
 	}
 
+	private void init() {
+	}
+
 }

@@ -1,10 +1,10 @@
 package com.delacasa.auth.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
@@ -22,12 +22,14 @@ import lombok.Getter;
 public class AccountStatus {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 
-	@Lob
-	private String description;
+//	@Lob
+//	@Basic(fetch = LAZY)
+//	private String description;
 
+	@Column(name = "name", nullable = false, unique = true)
 	private String name;
 
 }

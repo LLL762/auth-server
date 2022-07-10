@@ -70,7 +70,7 @@ public class Account {
 	@Column(name = "remaining_tries")
 	@Min(value = 0)
 	@Setter
-	private byte remainingTries;
+	private byte failedAttempt;
 
 	@Column(name = "remember_me")
 	@Setter
