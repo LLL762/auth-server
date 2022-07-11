@@ -8,6 +8,4 @@ public interface AccountStatusService {
 
 	Optional<AccountStatus> getByName(final String name);
 
-	Iterable<AccountStatus> getAllStatus();
-
 }

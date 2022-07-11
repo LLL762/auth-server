@@ -1,14 +1,17 @@
 package com.delacasa.auth.entity;
 
+import static javax.persistence.GenerationType.AUTO;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 /**
@@ -18,11 +21,13 @@ import lombok.Getter;
 @Entity
 @Table(name = "account_status")
 @Getter
+@EqualsAndHashCode
+@AllArgsConstructor
 @Immutable
 public class AccountStatus {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = AUTO)
 	private int id;
 
 //	@Lob

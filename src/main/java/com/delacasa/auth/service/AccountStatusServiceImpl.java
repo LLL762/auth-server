@@ -1,73 +1,75 @@
 package com.delacasa.auth.service;
 
-import static java.util.Collections.unmodifiableList;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-import org.springframework.stereotype.Service;
-
+import com.delacasa.auth.config.AccountConfig;
 import com.delacasa.auth.entity.AccountStatus;
 import com.delacasa.auth.repo.AccountStatusRepo;
+
+import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class AccountStatusServiceImpl {
+public class AccountStatusServiceImpl implements AccountStatusService {
 
 	private AccountStatusRepo repo;
+	private final AccountConfig config;
 
 	private boolean hasInit = false;
 
-	private List<AccountStatus> allStatus;
+	private Map<String, AccountStatus> statusMap = new HashMap<>();
 
-	private final List<String> names = List.of("OK", "LOCKED_AUTH", "LOCKED_ADMIN", "BANNED");
-
-	private byte[] indexes = new byte[names.size()];
-
-	private byte okIndex = -1;
-	private byte lockAuthIndex = -1;
-	private byte lockAdminIndex = -1;
-	private byte bannedIndex = -1;
-
-	public AccountStatusServiceImpl(AccountStatusRepo repo) {
+	public AccountStatusServiceImpl(AccountStatusRepo repo, final AccountConfig config) {
 
 		this.repo = repo;
+		this.config = config;
 
 	}
 
 	private synchronized void init() {
 
-		byte index = 0;
+		final List<String> names = new ArrayList<>(Arrays.asList(config.getStatusNames()));
+		String errorMsg;
 
 		if (hasInit) {
 			return;
 		}
 
-		allStatus = unmodifiableList(repo.findAll());
+		for (final AccountStatus status : repo.findAll()) {
 
-		final Map<String, AccountStatus> collect = allStatus.parallelStream().filter(s -> names.contains(s.getName()))
+			final String name = status.getName();
+			final int index = names.indexOf(name);
 
-															.collect(Collectors.toUnmodifiableMap(
-																	AccountStatus::getName, s -> s));
+			if (index >= 0) {
 
-		names.containsAll(collect.keySet());
+				statusMap.put(name, status);
+				names.remove(index);
 
-		System.out.println(collect);
+			} else {
 
-		this.repo = null;
+				log.warn(name + " is an unsuported account status");
 
-		for (final AccountStatus status : allStatus) {
+			}
 
-			mapIndexes(status, index);
-			index++;
 		}
 
-		checkIndexes();
+		if (!names.isEmpty()) {
 
+			errorMsg = "Account status : " + names.toString() + " not found !";
+			log.error(errorMsg);
+			throw new NoSuchElementException(errorMsg);
+
+		}
+
+		this.repo = null;
 		hasInit = true;
 
 	}
@@ -80,64 +82,21 @@ public class AccountStatusServiceImpl {
 
 	}
 
-	public List<AccountStatus> getAllStatus() {
+	@Override
+	public Optional<AccountStatus> getByName(final String name) {
 
 		checkInit();
-		return allStatus;
-	}
 
-	private void mapIndexes(final AccountStatus status, final byte index) {
+		final AccountStatus status = statusMap.get(name);
 
-//		final int i = names.indexOf(status.getName());
-//
-//		if (i == -1) {
-//			log.warn("unsupported status : " + status.getName());
-//			return;
-//
-//		}
-//
-//		indexes[i] = index;
-
-		switch (status.getName()) {
-		case "OK": {
-			okIndex = index;
-			break;
-		}
-		case "LOCKED_AUTH": {
-			lockAuthIndex = index;
-			break;
-		}
-		case "LOCKED_ADMIN": {
-			lockAdminIndex = index;
-			break;
-		}
-		case "BANNED": {
-			bannedIndex = index;
-			break;
-		}
-
-		default: {
-			log.warn("unsupported status : " + status.getName());
-			break;
-		}
-
-		}
+		return status == null ? Optional.empty() : Optional.of(status);
 
 	}
 
-	private void checkIndexes() {
+	public Map<String, AccountStatus> getStatusMap() {
 
-		final StringBuilder msg = new StringBuilder();
-
-		msg.append(okIndex == -1 ? "OK status is missing+/n" : "");
-		msg.append(lockAuthIndex == -1 ? "LOCKED_AUTH status is missing+/n" : "");
-		msg.append(lockAdminIndex == -1 ? "LOCKED_ADMIN is missing+/n" : "");
-		msg.append(bannedIndex == -1 ? "BANNED status is missing+/n" : "");
-
-		if (!msg.isEmpty()) {
-			throw new NoSuchElementException(msg.toString());
-		}
-
+		checkInit();
+		return new HashMap<>(statusMap);
 	}
 
 }
