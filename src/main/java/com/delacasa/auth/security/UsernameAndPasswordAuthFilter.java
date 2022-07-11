@@ -41,6 +41,8 @@ public class UsernameAndPasswordAuthFilter extends UsernamePasswordAuthenticatio
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException failed) throws IOException, ServletException {
 
+		response.sendRedirect(SPRING_SECURITY_FORM_PASSWORD_KEY);
+
 		super.unsuccessfulAuthentication(request, response, failed);
 	}
 

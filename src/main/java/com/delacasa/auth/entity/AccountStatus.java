@@ -13,6 +13,7 @@ import org.hibernate.annotations.Immutable;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * The persistent class for the account_status database table.
@@ -22,6 +23,7 @@ import lombok.Getter;
 @Table(name = "account_status")
 @Getter
 @EqualsAndHashCode
+@NoArgsConstructor
 @AllArgsConstructor
 @Immutable
 public class AccountStatus {

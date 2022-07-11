@@ -8,19 +8,21 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import com.delacasa.auth.config.AppLoginConfig;
 import com.delacasa.auth.entity.Account;
-import com.delacasa.auth.model.AccountStatusEnum;
 import com.delacasa.auth.service.AccountService;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Component
 public class CustomAuthProvider implements AuthenticationProvider {
 
 	private final PasswordEncoder encoder;
 	private final AccountService accountService;
+	private final CustomAuthService customAuthService;
 	private final AppLoginConfig loginConfig;
 
 	@Override
@@ -29,13 +31,13 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 		final CustomAuth auth = (CustomAuth) authentication;
 
-		final Account account = accountService	.getAccountByUsernameOrMail(auth.getPrincipal())
+		final Account account = accountService	.getAccountByUsernameOrMail(auth.getName())
 												.orElseThrow(() -> new BadCredentialsException("Username not found"));
 
 		checkStatus(account);
 		checkPassword(auth.getCredentials(), account);
 
-		auth.setUp(account);
+		customAuthService.setUp(auth, account);
 
 		return auth;
 	}
@@ -48,18 +50,18 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 	private void checkStatus(final Account account) throws DisabledException {
 
-		switch (AccountStatusEnum.valueOf(account.getStatus().getName())) {
+		switch (account.getStatus().getName()) {
 
-		case OK -> {
+		case "OK" -> {
 
 		}
-		case BANNED -> {
+		case "BANNED" -> {
 			throw new DisabledException("Account banned");
 		}
-		case LOCKED_AUTH -> {
+		case "LOCKED_AUTH" -> {
 			// TO DO
 		}
-		case LOCKED_ADMIN -> {
+		case "LOCKED_ADMIN" -> {
 
 			// TO DO
 

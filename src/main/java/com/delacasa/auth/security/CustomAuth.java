@@ -8,48 +8,33 @@ import java.util.Set;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.Assert;
 
-import com.delacasa.auth.entity.Account;
-import com.delacasa.auth.entity.AccountHasAuthorization;
-
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class CustomAuth implements Authentication {
 
-	private Map<String, String> details = new HashMap<>();
-	private Set<GrantedAuthority> authorities = new HashSet<>();
+	private final Map<String, String> details = new HashMap<>();
+	private final Set<GrantedAuthority> authorities = new HashSet<>();
 
-	private final String name;
-	private final String credentials;
-	private final String principal;
+	private String name;
+	private String credentials;
+	private Long principal;
 
 	private boolean authenticated = false;
 
-	public CustomAuth(final AuthRequestDetails requestDetails) {
+	public void addAuthority(final GrantedAuthority authority) {
 
-		this.name = requestDetails.getUsernameOrEmail();
-		this.principal = requestDetails.getUsernameOrEmail();
-		this.credentials = requestDetails.getPassword();
-		this.details.put("userIP", requestDetails.getUserIpAddress());
+		authorities.add(authority);
 
 	}
 
-	public void setUp(final Account account) {
+	public void putDetail(final String key, final String value) {
 
-		authorities.add(new SimpleGrantedAuthority("ROLE_" + account.getRole().getName()));
-
-		for (final AccountHasAuthorization hasAuthorization : account.getAuthorizations()) {
-
-			final String authorizationName = hasAuthorization.getAuthorization().getName();
-			final Long categoryID = hasAuthorization.getAuthorization().getId();
-
-			authorities.add(hasAuthorization.isRestriction() ? new CategoryRestriction(authorizationName, categoryID)
-					: new CategoryAuthority(authorizationName, categoryID));
-
-		}
+		details.put(key, value);
 
 	}
 
@@ -66,7 +51,7 @@ public class CustomAuth implements Authentication {
 	}
 
 	@Override
-	public String getPrincipal() {
+	public Long getPrincipal() {
 
 		return principal;
 	}

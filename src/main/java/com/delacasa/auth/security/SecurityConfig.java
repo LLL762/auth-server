@@ -52,12 +52,6 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	CustomAuthProvider authProvider() {
-		return new CustomAuthProvider(passwordEncoder(), accountService, loginConfig);
-
-	}
-
-	@Bean
 	AuthenticationManager authManager()
 			throws Exception {
 
