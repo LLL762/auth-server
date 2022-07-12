@@ -5,9 +5,6 @@ import static java.time.Instant.now;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.delacasa.auth.exception.JwtTokenException;
 import com.delacasa.auth.security.CustomAuth;
 import com.nimbusds.jose.EncryptionMethod;
@@ -27,6 +24,9 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class JwtServiceImpl implements JwtService<SignedJWT> {
@@ -54,7 +54,7 @@ public class JwtServiceImpl implements JwtService<SignedJWT> {
 	public String createToken(final CustomAuth auth) {
 
 		try {
-			return generateJWE(generateJWS(claimsModel)).serialize();
+			return generateJWE(generateJWS(auth)).serialize();
 		} catch (JOSEException e) {
 			throw new JwtTokenException(":(");
 		}
@@ -89,8 +89,8 @@ public class JwtServiceImpl implements JwtService<SignedJWT> {
 	private JWEObject generateJWE(SignedJWT jws) throws JOSEException {
 
 		final JWEObject output = new JWEObject(
-				new JWEHeader.Builder(JWEAlgorithm.RSA_OAEP_256, EncryptionMethod.A256GCM)	.contentType("JWT")
-																							.build(),
+				new JWEHeader.Builder(JWEAlgorithm.RSA_OAEP_256, EncryptionMethod.A256GCM).contentType("JWT")
+						.build(),
 				new Payload(jws));
 
 		output.encrypt(new RSAEncrypter(recipientPublicJWK));
@@ -99,14 +99,14 @@ public class JwtServiceImpl implements JwtService<SignedJWT> {
 
 	}
 
-	private SignedJWT generateJWS(final JwtClaimsModel claimsModel) throws JOSEException {
+	private SignedJWT generateJWS(final CustomAuth auth) throws JOSEException {
 
 		final SignedJWT output = new SignedJWT(
 				new JWSHeader.Builder(JWSAlgorithm.RS256)
-															.keyID(senderJWK.getKeyID())
-															.build(),
+						.keyID(senderJWK.getKeyID())
+						.build(),
 
-				setUpClaims(claimsModel));
+				setUpClaims(auth));
 
 		output.sign(new RSASSASigner(senderJWK));
 
@@ -118,34 +118,32 @@ public class JwtServiceImpl implements JwtService<SignedJWT> {
 
 		return new JWTClaimsSet.Builder()
 
-											.subject(auth.getPrincipal().toString())
-											.issuer(jwtConfig.getIssuer())
-											.audience(jwtConfig.getAudience())
-											.issueTime(new Date())
-											.expirationTime(
-													Date.from(now().plusSeconds(jwtConfig.getExpirationInSeconds())))
-											.claim(jwtConfig.getClaimIp(),
-													auth.getDetails().get(jwtConfig.getClaimIp()))
-											.claim(jwtConfig.getClaimRole(), claimsModel.getRole())
-											.claim(jwtConfig.getClaimAuthorizations(), claimsModel.getAuthorizations())
-											.claim(jwtConfig.getClaimRestrictions(), claimsModel.getRestrictions())
-											.build();
+				.subject(auth.getPrincipal())
+				.issuer(jwtConfig.getIssuer())
+				.audience(jwtConfig.getAudience())
+				.issueTime(new Date())
+				.expirationTime(
+						Date.from(now().plusSeconds(jwtConfig.getExpirationInSeconds())))
+				.claim(jwtConfig.getClaimIp(),
+						auth.getDetails().get(jwtConfig.getClaimIp()))
+				.claim(jwtConfig.getClaimAuthorities(), auth.getAuthorities())
+				.build();
 
 	}
 
 	private RSAKey generateSenderJwk() throws JOSEException {
 
 		return new RSAKeyGenerator(2048).keyID("123")
-										.keyUse(KeyUse.SIGNATURE)
-										.generate();
+				.keyUse(KeyUse.SIGNATURE)
+				.generate();
 
 	}
 
 	private RSAKey generateRecipientJwk() throws JOSEException {
 
 		return new RSAKeyGenerator(2048).keyID("321")
-										.keyUse(KeyUse.ENCRYPTION)
-										.generate();
+				.keyUse(KeyUse.ENCRYPTION)
+				.generate();
 
 	}
 

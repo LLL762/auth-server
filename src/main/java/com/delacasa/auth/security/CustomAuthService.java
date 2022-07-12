@@ -1,13 +1,13 @@
 package com.delacasa.auth.security;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Service;
-
 import com.delacasa.auth.config.AccountConfig;
 import com.delacasa.auth.entity.Account;
 import com.delacasa.auth.entity.AccountHasAuthorization;
 import com.delacasa.auth.jwt.JwtConfig;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,7 +18,7 @@ public class CustomAuthService {
 	private final AccountConfig accountConfig;
 	private final JwtConfig jwtConfig;
 
-	public CustomAuth init(final CustomAuth auth, final AuthRequestDetails requestDetails) {
+	public CustomAuth initAuth(final CustomAuth auth, final AuthRequestDetails requestDetails) {
 
 		auth.setName(requestDetails.getUsernameOrEmail());
 		auth.setCredentials(requestDetails.getPassword());
@@ -30,8 +30,9 @@ public class CustomAuthService {
 
 	public CustomAuth setUp(final CustomAuth auth, final Account account) {
 
-		auth.setPrincipal(account.getId());
-		auth.addAuthority(new SimpleGrantedAuthority(accountConfig.getRolesPrefix() + account.getRole().getName()));
+		auth.setPrincipal(account.getId().toString());
+		auth.addAuthority(
+				new SimpleGrantedAuthority(checkPrefix(accountConfig.getRolesPrefix(), account.getRole().getName())));
 
 		for (final AccountHasAuthorization hasAuthorization : account.getAuthorizations()) {
 

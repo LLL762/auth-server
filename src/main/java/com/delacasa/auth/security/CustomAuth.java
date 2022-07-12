@@ -22,7 +22,7 @@ public class CustomAuth implements Authentication {
 
 	private String name;
 	private String credentials;
-	private Long principal;
+	private String principal;
 
 	private boolean authenticated = false;
 
@@ -51,7 +51,7 @@ public class CustomAuth implements Authentication {
 	}
 
 	@Override
-	public Long getPrincipal() {
+	public String getPrincipal() {
 
 		return principal;
 	}

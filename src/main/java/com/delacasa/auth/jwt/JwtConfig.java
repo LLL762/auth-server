@@ -19,8 +19,6 @@ public class JwtConfig {
 	private int refreshExpirationInSeconds;
 
 	private String claimIp;
-	private String claimRole;
-	private String claimAuthorizations;
-	private String claimRestrictions;
+	private String claimAuthorities;
 
 }
