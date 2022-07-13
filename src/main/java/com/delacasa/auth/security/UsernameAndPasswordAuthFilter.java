@@ -7,12 +7,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.delacasa.auth.jwt.JwtService;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.delacasa.auth.config.AppLoginConfig;
+import com.delacasa.auth.jwt.JwtConfig;
+import com.delacasa.auth.jwt.JwtService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +23,9 @@ public class UsernameAndPasswordAuthFilter extends UsernamePasswordAuthenticatio
 
 	private final AuthenticationManager authenticationManager;
 	private final CustomAuthService customAuthService;
-	private final JwtService jwtService;
+	private final JwtService<?> jwtService;
+	private final JwtConfig jwtConfig;
+	private final AppLoginConfig loginConfig;
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -39,9 +43,8 @@ public class UsernameAndPasswordAuthFilter extends UsernamePasswordAuthenticatio
 
 		final CustomAuth auth = (CustomAuth) authResult;
 
-		response.addHeader("Authorization", jwtService.createToken(auth));
-
-		super.successfulAuthentication(request, response, chain, authResult);
+		response.setHeader(jwtConfig.getAccessTokenHeader(), jwtService.createToken(auth));
+		response.sendRedirect(loginConfig.getSuccessUrl());
 
 	}
 

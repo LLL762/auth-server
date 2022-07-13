@@ -21,4 +21,7 @@ public class JwtConfig {
 	private String claimIp;
 	private String claimAuthorities;
 
+	private String accessTokenHeader;
+	private String refreshTokenHeader;
+
 }

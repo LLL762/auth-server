@@ -2,10 +2,6 @@ package com.delacasa.auth.security;
 
 import javax.transaction.Transactional;
 
-import com.delacasa.auth.config.AppLoginConfig;
-import com.delacasa.auth.entity.Account;
-import com.delacasa.auth.service.AccountService;
-
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -13,6 +9,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import com.delacasa.auth.config.AppLoginConfig;
+import com.delacasa.auth.entity.Account;
+import com.delacasa.auth.service.AccountService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,8 +31,8 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 		final CustomAuth auth = (CustomAuth) authentication;
 
-		final Account account = accountService.getAccountByUsernameOrMail(auth.getName())
-				.orElseThrow(() -> new BadCredentialsException("Username not found"));
+		final Account account = accountService	.getAccountByUsernameOrMail(auth.getName())
+												.orElseThrow(() -> new BadCredentialsException("Username not found"));
 
 		checkStatus(account);
 		checkPassword(auth.getCredentials(), account);
@@ -52,22 +52,22 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 		switch (account.getStatus().getName()) {
 
-			case "OK" -> {
+		case "OK" -> {
 
-			}
-			case "BANNED" -> {
-				throw new DisabledException("Account banned");
-			}
-			case "LOCKED_AUTH" -> {
-				// TO DO
-			}
-			case "LOCKED_ADMIN" -> {
+		}
+		case "BANNED" -> {
+			throw new DisabledException("Account banned");
+		}
+		case "LOCKED_AUTH" -> {
+			// TO DO
+		}
+		case "LOCKED_ADMIN" -> {
 
-				// TO DO
+			// TO DO
 
-			}
+		}
 
-			default -> throw new IllegalArgumentException();
+		default -> throw new IllegalArgumentException();
 		}
 
 	}
