@@ -34,8 +34,8 @@ class AccountStatusServiceImplTest {
 
 	// TODO choose a sl4j impl and test logging.
 
-	private Logger logger = (Logger) LoggerFactory.getLogger(AccountStatusServiceImpl.class);
-	ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+	private final Logger logger = (Logger) LoggerFactory.getLogger(AccountStatusServiceImpl.class);
+	private final ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
 
 	// add the appender to the logger
 
@@ -62,7 +62,6 @@ class AccountStatusServiceImplTest {
 	@AfterEach
 	private void clearLogList() {
 
-		listAppender.stop();
 		listAppender.clearAllFilters();
 
 	}
