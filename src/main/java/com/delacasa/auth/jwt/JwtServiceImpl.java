@@ -5,6 +5,9 @@ import static java.time.Instant.now;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.delacasa.auth.exception.JwtTokenException;
 import com.delacasa.auth.security.CustomAuth;
 import com.nimbusds.jose.EncryptionMethod;
@@ -24,9 +27,6 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class JwtServiceImpl implements JwtService<SignedJWT> {
@@ -59,6 +59,15 @@ public class JwtServiceImpl implements JwtService<SignedJWT> {
 			throw new JwtTokenException(":(");
 		}
 
+	}
+
+	@Override
+	public String createRefreshToken(final CustomAuth auth) {
+		try {
+			return generateJWE(generateRefreshJWS(auth)).serialize();
+		} catch (JOSEException e) {
+			throw new JwtTokenException(":(");
+		}
 	}
 
 	@Override
@@ -114,6 +123,21 @@ public class JwtServiceImpl implements JwtService<SignedJWT> {
 
 	}
 
+	private SignedJWT generateRefreshJWS(final CustomAuth auth) throws JOSEException {
+
+		final SignedJWT output = new SignedJWT(
+				new JWSHeader.Builder(JWSAlgorithm.RS256)
+						.keyID(senderJWK.getKeyID())
+						.build(),
+
+				setUpRefreshClaims(auth));
+
+		output.sign(new RSASSASigner(senderJWK));
+
+		return output;
+
+	}
+
 	private JWTClaimsSet setUpClaims(final CustomAuth auth) {
 
 		return new JWTClaimsSet.Builder()
@@ -122,11 +146,23 @@ public class JwtServiceImpl implements JwtService<SignedJWT> {
 				.issuer(jwtConfig.getIssuer())
 				.audience(jwtConfig.getAudience())
 				.issueTime(new Date())
-				.expirationTime(
-						Date.from(now().plusSeconds(jwtConfig.getExpirationInSeconds())))
-				.claim(jwtConfig.getClaimIp(),
-						auth.getDetails().get(jwtConfig.getClaimIp()))
+				.expirationTime(Date.from(now().plusSeconds(jwtConfig.getExpirationInSeconds())))
+				.claim(jwtConfig.getClaimIp(), auth.getDetails().get(jwtConfig.getClaimIp()))
 				.claim(jwtConfig.getClaimAuthorities(), auth.getAuthorities())
+				.build();
+
+	}
+
+	private JWTClaimsSet setUpRefreshClaims(final CustomAuth auth) {
+
+		return new JWTClaimsSet.Builder()
+
+				.subject(auth.getPrincipal())
+				.issuer(jwtConfig.getIssuer())
+				.audience(jwtConfig.getAudience())
+				.issueTime(new Date())
+				.expirationTime(Date.from(now().plusSeconds(jwtConfig.getRefreshExpirationInSeconds())))
+				.claim(jwtConfig.getClaimIp(), auth.getDetails().get(jwtConfig.getClaimIp()))
 				.build();
 
 	}

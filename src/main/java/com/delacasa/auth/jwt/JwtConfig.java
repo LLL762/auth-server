@@ -23,5 +23,6 @@ public class JwtConfig {
 
 	private String accessTokenHeader;
 	private String refreshTokenHeader;
+	private String headerPrefix;
 
 }

@@ -43,7 +43,9 @@ public class UsernameAndPasswordAuthFilter extends UsernamePasswordAuthenticatio
 
 		final CustomAuth auth = (CustomAuth) authResult;
 
-		response.setHeader(jwtConfig.getAccessTokenHeader(), jwtService.createToken(auth));
+		response.setHeader(jwtConfig.getAccessTokenHeader(), jwtConfig.getPrefix() + jwtService.createToken(auth));
+		response.setHeader(jwtConfig.getRefreshTokenHeader(), jwtService.createRefreshToken(auth));
+
 		response.sendRedirect(loginConfig.getSuccessUrl());
 
 	}
