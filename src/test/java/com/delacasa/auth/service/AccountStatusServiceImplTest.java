@@ -26,21 +26,13 @@ import com.delacasa.auth.repo.AccountStatusRepo;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.read.ListAppender;
 
 @ExtendWith(MockitoExtension.class)
 class AccountStatusServiceImplTest {
 
-	// TODO choose a sl4j impl and test logging.
-
 	private final Logger logger = (Logger) LoggerFactory.getLogger(AccountStatusServiceImpl.class);
 	private final ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
-
-	// add the appender to the logger
-
-	@Mock
-	private Appender<AccountStatusServiceImpl> mockedAppender;
 
 	@Mock
 	private AccountStatusRepo repo;
