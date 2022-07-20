@@ -14,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import com.delacasa.auth.config.AppLoginConfig;
 import com.delacasa.auth.jwt.JwtConfig;
 import com.delacasa.auth.jwt.JwtService;
+import com.delacasa.auth.mail.EmailTotpConfig;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +24,7 @@ public class SecurityConfig {
 
 	private final AppLoginConfig loginConfig;
 	private final AuthenticationConfiguration authConfig;
+	private final EmailTotpConfig totpConfig;
 	private final CustomAuthService customAuthService;
 	private final JwtService<?> jwtService;
 	private final JwtConfig jwtConfig;
@@ -32,18 +34,22 @@ public class SecurityConfig {
 
 		http
 
-			.sessionManagement().sessionCreationPolicy(STATELESS)
-			.and()
+				.sessionManagement().sessionCreationPolicy(STATELESS)
 
-			.formLogin()
-			.loginProcessingUrl(loginConfig.getUrl())
-			.defaultSuccessUrl(loginConfig.getSuccessUrl())
+				.and()
+				.authorizeHttpRequests()
+				.antMatchers(totpConfig.getTotpUrl() + "/**").permitAll()
 
-			.and()
+				.and()
+				.formLogin()
+				.loginProcessingUrl(loginConfig.getUrl())
+				.defaultSuccessUrl(loginConfig.getSuccessUrl())
 
-			.authenticationManager(authManager())
-			.addFilter(new UsernameAndPasswordAuthFilter(authManager(), customAuthService, jwtService, jwtConfig,
-					loginConfig));
+				.and()
+
+				.authenticationManager(authManager())
+				.addFilter(new UsernameAndPasswordAuthFilter(authManager(), customAuthService, jwtService, jwtConfig,
+						loginConfig));
 
 		return http.build();
 	}

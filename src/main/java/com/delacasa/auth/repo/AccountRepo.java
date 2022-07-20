@@ -13,4 +13,6 @@ public interface AccountRepo extends CustomRepository<Account, Long> {
 
 	Optional<Account> findByEmail(final String email);
 
+	Account save(Account account);
+
 }

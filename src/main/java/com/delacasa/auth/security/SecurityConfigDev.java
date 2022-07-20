@@ -14,7 +14,7 @@ public class SecurityConfigDev {
 	private String h2ConsolePath;
 
 	@Bean
-	WebSecurityCustomizer webSecurityCustomizer() {
+	WebSecurityCustomizer webSecurityCustomizerDev() {
 		return web -> web.ignoring().antMatchers(h2ConsolePath + "/**");
 	}
 

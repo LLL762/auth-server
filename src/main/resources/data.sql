@@ -5,4 +5,4 @@ INSERT INTO account_role(id,name) VALUES (1,'FREE_MEMBER'), (2,'PREMIUM_MEMBER')
  password = arnold
 */
 INSERT INTO account (username,email, password, has_multi_factor_auth,phone, remaining_tries, remember_me,role_id, status_id)
-VALUES ('Arnold','arnold78@gmail.com','$2a$10$10YqA4moO7vwr/4fboeYLeCi1aHl4kziybO.QQUrUO12LgI1LGKZq', 0, 0258964781 ,5,1,1,1);
+VALUES ('Arnold','arnold58@gmail.com','$2a$10$10YqA4moO7vwr/4fboeYLeCi1aHl4kziybO.QQUrUO12LgI1LGKZq', 0, 0258964781 ,5,1,1,1);

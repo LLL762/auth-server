@@ -96,10 +96,12 @@ public class Account {
 	private Set<AccountHasAuthorization> authorizations = new HashSet<>();
 
 	@Column(name = "totp")
+	@Setter
 	private String totp;
 
-	@Column(name = "totp_issue_date")
-	private LocalDateTime totpIssueDate;
+	@Column(name = "totp_expiration_time")
+	@Setter
+	private LocalDateTime totpExpiration;
 
 	@Override
 	public int hashCode() {

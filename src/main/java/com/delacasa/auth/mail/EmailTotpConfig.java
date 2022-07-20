@@ -15,5 +15,9 @@ public class EmailTotpConfig {
 	private final String sender;
 	private final String contentTemplateUrl;
 	private final String subject;
+	private final String totpUrl;
 
+	private final int expirationInSeconds;
+	private final byte totpLength;
+	private final byte totpMaxTries;
 }

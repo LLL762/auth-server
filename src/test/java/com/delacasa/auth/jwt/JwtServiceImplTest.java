@@ -1,7 +1,5 @@
 package com.delacasa.auth.jwt;
 
-import com.nimbusds.jwt.SignedJWT;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.nimbusds.jwt.SignedJWT;
+
 @SpringBootTest
 @ActiveProfiles("dev")
-
 class JwtServiceImplTest {
 
 	@MockBean
