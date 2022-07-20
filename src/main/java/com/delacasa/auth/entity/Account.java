@@ -65,7 +65,7 @@ public class Account {
 	private String password;
 
 	@Column(name = "has_multi_factor_auth")
-	private boolean hasMultiFactorAuth;
+	private boolean twoFactorAuth;
 
 	@Column(name = "remaining_tries")
 	@Min(value = 0)
@@ -94,6 +94,12 @@ public class Account {
 	@OneToMany(fetch = LAZY, mappedBy = "account")
 	@Immutable
 	private Set<AccountHasAuthorization> authorizations = new HashSet<>();
+
+	@Column(name = "totp")
+	private String totp;
+
+	@Column(name = "totp_issue_date")
+	private LocalDateTime totpIssueDate;
 
 	@Override
 	public int hashCode() {

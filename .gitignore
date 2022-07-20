@@ -39,3 +39,10 @@ build/
 coverage.db*
 .metadata
 /.sdkmanrc
+
+### Private properties  ###
+spring-mail.properties
+
+
+
+
