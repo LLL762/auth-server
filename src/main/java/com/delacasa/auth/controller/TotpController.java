@@ -1,8 +1,11 @@
 package com.delacasa.auth.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -18,6 +21,13 @@ public class TotpController {
 	public String get(@PathVariable final String username) {
 
 		return "hello" + username;
+
+	}
+
+	@PostMapping(value = "/{username}")
+	public void post(@PathVariable final String username, HttpServletRequest request) {
+
+		request.getParameter("totp");
 
 	}
 
