@@ -1,13 +1,14 @@
 package com.delacasa.auth.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.delacasa.auth.mail.EmailTotpConfig;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,18 +17,28 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping(value = "${com.delacasa.auth.mail.totp-url}")
 public class TotpController {
 
-	@GetMapping(value = "/{username}")
-	@ResponseBody
-	public String get(@PathVariable final String username) {
+	private final EmailTotpConfig totpConfig;
 
-		return "hello" + username;
+	@GetMapping("/{id}")
+	public ModelAndView get(@PathVariable final Long id) {
+
+		return new ModelAndView(totpConfig.getFormTemplate());
 
 	}
 
-	@PostMapping(value = "/{username}")
-	public void post(@PathVariable final String username, HttpServletRequest request) {
+	@PostMapping("/{id}")
+	public String post(@PathVariable String id, @RequestParam final String totp) {
 
-		request.getParameter("totp");
+		System.out.println(totp);
+		System.out.println(id);
+
+		if (totp.length() != totpConfig.getTotpLength()) {
+
+			return "redirect:" + totpConfig.getTotpUrl() + "/" + id;
+
+		}
+
+		return totpConfig.getFormTemplate();
 
 	}
 

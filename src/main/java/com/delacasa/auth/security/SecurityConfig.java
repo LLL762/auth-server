@@ -38,7 +38,7 @@ public class SecurityConfig {
 
 				.and()
 				.authorizeHttpRequests()
-				.antMatchers(totpConfig.getTotpUrl() + "/**").permitAll()
+				.antMatchers(totpConfig.getTotpUrl() + "/**", jwtConfig.getRefreshTokenUrl() + "/**").permitAll()
 
 				.and()
 				.formLogin()

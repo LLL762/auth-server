@@ -13,9 +13,12 @@ import lombok.RequiredArgsConstructor;
 public class EmailTotpConfig {
 
 	private final String sender;
-	private final String contentTemplateUrl;
+	private final String contentTemplate;
+	private final String formTemplate;
 	private final String subject;
+
 	private final String totpUrl;
+	private final String totpSuccessRedirect;
 
 	private final int expirationInSeconds;
 	private final byte totpLength;
