@@ -1,5 +1,6 @@
 package com.delacasa.auth.security;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -12,7 +13,10 @@ import org.springframework.stereotype.Component;
 
 import com.delacasa.auth.config.AppLoginConfig;
 import com.delacasa.auth.entity.Account;
+import com.delacasa.auth.exception.TwoFAuthRequiredException;
+import com.delacasa.auth.mail.TotpEmailService;
 import com.delacasa.auth.service.AccountService;
+import com.delacasa.auth.service.AccountStatusService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +28,8 @@ public class CustomAuthProvider implements AuthenticationProvider {
 	private final AccountService accountService;
 	private final CustomAuthService customAuthService;
 	private final AppLoginConfig loginConfig;
+	private final AccountStatusService statusService;
+	private final TotpEmailService totpEmailService;
 
 	@Override
 	@Transactional
@@ -40,6 +46,19 @@ public class CustomAuthProvider implements AuthenticationProvider {
 		customAuthService.setUp(auth, account);
 
 		if (account.isTwoFactorAuth()) {
+
+			account.setStatus(statusService.getByName("LOCKED_AUTH").orElseThrow());
+			account.setFailedAttempt((byte) 0);
+
+			try {
+				totpEmailService.sendCode(account, auth);
+			} catch (MessagingException e) {
+				// TODO better handling.
+				throw new RuntimeException();
+			}
+
+			accountService.save(account);
+			throw new TwoFAuthRequiredException();
 
 		}
 

@@ -18,7 +18,7 @@ import net.bytebuddy.utility.RandomString;
 
 @Service
 @RequiredArgsConstructor
-public class EmailServiceImpl {
+public class TotpEmailServiceImpl implements TotpEmailService {
 
 	private final JavaMailSender mailSender;
 	private final EmailTotpConfig emailTotpConfig;
@@ -51,6 +51,7 @@ public class EmailServiceImpl {
 				+ "One Time Password to login:</p>"
 				+ "<p><b>" + totp + "</b></p>"
 				+ "<br>"
+				+ "<a href=http://localhost:8080/totp/" + account.getId() + "> click </a>"
 				+ "<p>Note: this OTP is set to expire in 5 minutes.</p>";
 
 	}

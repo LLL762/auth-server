@@ -103,6 +103,14 @@ public class Account {
 	@Setter
 	private LocalDateTime totpExpiration;
 
+	@Column(name = "totp_ip")
+	@Setter
+	private String totpIp;
+
+	@Column(name = "totp_latest_edit_time")
+	@Setter
+	private LocalDateTime latestEdit;
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);

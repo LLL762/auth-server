@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,27 +14,22 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.delacasa.auth.config.AppLoginConfig;
-import com.delacasa.auth.exception.TwoFAuthRequiredException;
-import com.delacasa.auth.jwt.JwtConfig;
-import com.delacasa.auth.jwt.JwtService;
-
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class UsernameAndPasswordAuthFilter extends UsernamePasswordAuthenticationFilter {
+public class TotpFilter extends UsernamePasswordAuthenticationFilter {
 
 	private final AuthenticationManager authenticationManager;
 	private final CustomAuthService customAuthService;
-	private final JwtService<?> jwtService;
-	private final JwtConfig jwtConfig;
-	private final AppLoginConfig loginConfig;
 
 	@Override
+
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
 
-		final CustomAuth auth = new CustomAuth();
+		System.out.println("attempt");
+
+		final TotpAuth auth = new TotpAuth();
 		customAuthService.initAuth(auth, new AuthRequestDetails(request));
 
 		return authenticationManager.authenticate(auth);
@@ -41,29 +38,31 @@ public class UsernameAndPasswordAuthFilter extends UsernamePasswordAuthenticatio
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
-
-		final CustomAuth auth = (CustomAuth) authResult;
-
-		response.setHeader(jwtConfig.getAccessTokenHeader(), jwtConfig.getPrefix() + jwtService.createToken(auth));
-		response.setHeader(jwtConfig.getRefreshTokenHeader(), jwtService.createRefreshToken(auth));
-
-		response.sendRedirect(loginConfig.getSuccessUrl());
-
+		// TODO Auto-generated method stub
+		super.successfulAuthentication(request, response, chain, authResult);
 	}
 
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException failed) throws IOException, ServletException {
+		// TODO Auto-generated method stub
+		super.unsuccessfulAuthentication(request, response, failed);
+	}
 
-		if (failed.getClass().equals(TwoFAuthRequiredException.class)
-				&& failed.getMessage().equals(TwoFAuthRequiredException.getDEFAULT_MSG())) {
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
 
-			response.sendRedirect(loginConfig.getTwoFAuthRequiredUrl());
+		final HttpServletRequest req = (HttpServletRequest) request;
+
+		if (req.getMethod().equals("POST")) {
+
+			super.doFilter(request, response, chain);
 			return;
-
 		}
 
-		super.unsuccessfulAuthentication(request, response, failed);
+		chain.doFilter(request, response);
+
 	}
 
 }

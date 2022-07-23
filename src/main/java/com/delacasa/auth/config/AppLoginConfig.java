@@ -1,22 +1,21 @@
 package com.delacasa.auth.config;
 
-import static lombok.AccessLevel.PACKAGE;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.properties.ConstructorBinding;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
-@Configuration
-@ConfigurationProperties(prefix = "com.delacasa.auth.login")
+@ConfigurationProperties("com.delacasa.auth.login")
+@ConstructorBinding
+@RequiredArgsConstructor
 @Getter
-@Setter(value = PACKAGE)
 public class AppLoginConfig {
 
-	private String url;
-	private String successUrl;
-	private String mailRegex;
-	private byte maxTries;
+	private final String url;
+	private final String successUrl;
+	private final String twoFAuthRequiredUrl;
+	private final String mailRegex;
+	private final byte maxTries;
 
 }

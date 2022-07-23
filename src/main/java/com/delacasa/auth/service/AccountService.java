@@ -15,6 +15,12 @@ public class AccountService {
 
 	private final AccountRepo repo;
 
+	public Optional<Account> getAccountByUsernameOrMail(final Long id) {
+
+		return repo.findById(id);
+
+	}
+
 	public Optional<Account> getAccountByUsernameOrMail(final String usernameOrMail) {
 
 		if (usernameOrMail.contains("@")) {

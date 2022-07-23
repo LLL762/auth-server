@@ -12,7 +12,7 @@ import com.delacasa.auth.service.AccountService;
 class ITEmailServiceImplTest {
 
 	@Autowired
-	private EmailServiceImpl emailService;
+	private TotpEmailServiceImpl totpEmailService;
 
 	@Autowired
 	private AccountService accountService;
@@ -20,7 +20,7 @@ class ITEmailServiceImplTest {
 	@Test
 	void test() throws MessagingException {
 
-		emailService.sendCode(accountService.getAccountByUsernameOrMail("lamirallaurent@gmail.com").get(), null);
+		totpEmailService.sendCode(accountService.getAccountByUsernameOrMail("testmail45891@gmail.com").get(), null);
 
 	}
 
