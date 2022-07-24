@@ -15,7 +15,7 @@ public class AccountService {
 
 	private final AccountRepo repo;
 
-	public Optional<Account> getAccountByUsernameOrMail(final Long id) {
+	public Optional<Account> getAccountById(final Long id) {
 
 		return repo.findById(id);
 

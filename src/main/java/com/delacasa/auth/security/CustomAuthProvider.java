@@ -1,7 +1,6 @@
 package com.delacasa.auth.security;
 
 import javax.mail.MessagingException;
-import javax.transaction.Transactional;
 
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -10,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.delacasa.auth.config.AppLoginConfig;
 import com.delacasa.auth.entity.Account;
@@ -32,7 +32,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
 	private final TotpEmailService totpEmailService;
 
 	@Override
-	@Transactional
+	@Transactional(noRollbackFor = TwoFAuthRequiredException.class)
 	public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
 
 		final CustomAuth auth = (CustomAuth) authentication;
@@ -61,7 +61,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
 			throw new TwoFAuthRequiredException();
 
 		}
-
+		accountService.save(account);
 		return auth;
 	}
 

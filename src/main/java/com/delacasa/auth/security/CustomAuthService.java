@@ -1,13 +1,13 @@
 package com.delacasa.auth.security;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Service;
+
 import com.delacasa.auth.config.AccountConfig;
 import com.delacasa.auth.entity.Account;
 import com.delacasa.auth.entity.AccountHasAuthorization;
 import com.delacasa.auth.jwt.JwtConfig;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
@@ -46,6 +46,15 @@ public class CustomAuthService {
 
 		return auth;
 
+	}
+
+	public TotpAuth initTotpAuth(final TotpAuth auth, final TotpRequestDetails requestDetails) {
+
+		auth.setPrincipal(requestDetails.getId());
+		auth.setCredentials(requestDetails.getTotp());
+		auth.putDetail(jwtConfig.getClaimIp(), requestDetails.getUserIpAddress());
+
+		return auth;
 	}
 
 	private String checkPrefix(final String prefix, final String name) {

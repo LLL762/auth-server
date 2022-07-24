@@ -1,5 +1,7 @@
 package com.delacasa.auth.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +29,7 @@ public class TotpController {
 	}
 
 	@PostMapping("/{id}")
-	public String post(@PathVariable String id, @RequestParam final String totp) {
+	public String post(@PathVariable String id, @RequestParam final String totp, HttpServletRequest req) {
 
 		System.out.println(totp);
 		System.out.println(id);

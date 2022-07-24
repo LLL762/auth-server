@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.delacasa.auth.entity.Account;
 import com.delacasa.auth.entity.AccountStatus;
 
 @SpringBootTest
@@ -16,6 +17,9 @@ public class ITAccountStatusServiceImplTest {
 
 	@Autowired
 	private AccountStatusServiceImpl service;
+
+	@Autowired
+	private AccountService accountService;
 
 	@Nested
 	class ConfigAndDbMatches {
@@ -49,6 +53,20 @@ public class ITAccountStatusServiceImplTest {
 					"BANNED", new AccountStatus(4, "BANNED"));
 
 			assertThat(service.getStatusMap()).isEqualTo(expectedResult);
+
+		}
+
+		@Test
+		void equality() {
+
+			Account arnold = accountService.getAccountById(1L).get();
+
+			assertThat(service.getByName("OK")).contains(arnold.getStatus());
+
+			arnold.setStatus(service.getByName("LOCKED_AUTH").orElseThrow());
+			accountService.save(arnold);
+
+			assertThat(service.getByName("LOCKED_AUTH")).contains(arnold.getStatus());
 
 		}
 

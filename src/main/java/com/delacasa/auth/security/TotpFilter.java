@@ -14,6 +14,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.delacasa.auth.config.AppLoginConfig;
+import com.delacasa.auth.jwt.JwtConfig;
+import com.delacasa.auth.jwt.JwtService;
+
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -21,16 +25,16 @@ public class TotpFilter extends UsernamePasswordAuthenticationFilter {
 
 	private final AuthenticationManager authenticationManager;
 	private final CustomAuthService customAuthService;
+	private final JwtService<?> jwtService;
+	private final JwtConfig jwtConfig;
+	private final AppLoginConfig loginConfig;
 
 	@Override
-
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
 
-		System.out.println("attempt");
-
 		final TotpAuth auth = new TotpAuth();
-		customAuthService.initAuth(auth, new AuthRequestDetails(request));
+		customAuthService.initTotpAuth(auth, new TotpRequestDetails(request));
 
 		return authenticationManager.authenticate(auth);
 	}
@@ -38,8 +42,13 @@ public class TotpFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
-		// TODO Auto-generated method stub
-		super.successfulAuthentication(request, response, chain, authResult);
+
+		final TotpAuth auth = (TotpAuth) authResult;
+
+		response.setHeader(jwtConfig.getAccessTokenHeader(), jwtConfig.getPrefix() + jwtService.createToken(auth));
+		response.setHeader(jwtConfig.getRefreshTokenHeader(), jwtService.createRefreshToken(auth));
+
+		response.sendRedirect(loginConfig.getSuccessUrl());
 	}
 
 	@Override

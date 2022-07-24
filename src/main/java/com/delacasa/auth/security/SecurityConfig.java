@@ -29,7 +29,7 @@ public class SecurityConfig {
 
 	private TotpFilter generateTotpFilter() throws Exception {
 
-		final TotpFilter output = new TotpFilter(authManager(), customAuthService);
+		final TotpFilter output = new TotpFilter(authManager(), customAuthService, jwtService, jwtConfig, loginConfig);
 		output.setFilterProcessesUrl(totpConfig.getTotpUrl() + "/**");
 
 		return output;

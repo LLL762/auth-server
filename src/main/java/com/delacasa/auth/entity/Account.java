@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -23,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.ReadOnlyProperty;
 
 import lombok.Getter;
@@ -76,7 +78,7 @@ public class Account {
 	@Setter
 	private boolean rememberMe;
 
-	@ManyToOne(fetch = LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "status_id")
 	@NotNull
 	@Setter
@@ -107,9 +109,12 @@ public class Account {
 	@Setter
 	private String totpIp;
 
-	@Column(name = "totp_latest_edit_time")
-	@Setter
+	@Column(name = "latest_edit")
+	@UpdateTimestamp
 	private LocalDateTime latestEdit;
+
+	private String latestSucessIpV4;
+	private String latestSucessIpV6;
 
 	@Override
 	public int hashCode() {
