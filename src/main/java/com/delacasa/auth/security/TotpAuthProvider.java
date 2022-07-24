@@ -37,9 +37,20 @@ public class TotpAuthProvider implements AuthenticationProvider {
 		checkTotp(auth.getCredentials(), account);
 
 		customAuthService.setUp(auth, account);
+
+		cleanAccount(account);
+
 		accountService.save(account);
 
 		return auth;
+	}
+
+	private void cleanAccount(final Account account) {
+
+		account.setStatus(statusService.getByName("OK").orElseThrow());
+		account.setTotp(null);
+		account.setTotpExpiration(null);
+		account.setTotpIp(null);
 	}
 
 	@Override
