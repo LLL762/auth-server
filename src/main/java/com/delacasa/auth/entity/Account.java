@@ -10,7 +10,6 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -78,7 +77,7 @@ public class Account {
 	@Setter
 	private boolean rememberMe;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "status_id")
 	@NotNull
 	@Setter

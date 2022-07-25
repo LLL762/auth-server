@@ -40,15 +40,16 @@ public class SecurityConfig {
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 		http
-
 				.sessionManagement().sessionCreationPolicy(STATELESS)
 
 				.and()
+
 				.authorizeHttpRequests()
 				.antMatchers(totpConfig.getTotpUrl() + "/**", jwtConfig.getRefreshTokenUrl() + "/**")
 				.permitAll()
 
 				.and()
+
 				.formLogin()
 				.loginProcessingUrl(loginConfig.getUrl())
 				.defaultSuccessUrl(loginConfig.getSuccessUrl())
@@ -56,10 +57,11 @@ public class SecurityConfig {
 				.and()
 
 				.authenticationManager(authManager())
-
 				.addFilter(new UsernameAndPasswordAuthFilter(authManager(), customAuthService, jwtService, jwtConfig,
 						loginConfig))
-				.addFilter(generateTotpFilter());
+				.addFilter(generateTotpFilter())
+
+		;
 
 		return http.build();
 	}

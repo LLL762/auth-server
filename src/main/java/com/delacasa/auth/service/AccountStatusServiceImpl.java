@@ -14,6 +14,7 @@ import com.delacasa.auth.config.AccountConfig;
 import com.delacasa.auth.entity.AccountStatus;
 import com.delacasa.auth.repo.AccountStatusRepo;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -26,6 +27,15 @@ public class AccountStatusServiceImpl implements AccountStatusService {
 	private boolean hasInit = false;
 
 	private Map<String, AccountStatus> statusMap = new HashMap<>();
+
+	@Getter
+	private AccountStatus ok;
+	@Getter
+	private AccountStatus lockedAuth;
+	@Getter
+	private AccountStatus lockedAdmin;
+	@Getter
+	private AccountStatus banned;
 
 	public AccountStatusServiceImpl(AccountStatusRepo repo, final AccountConfig config) {
 

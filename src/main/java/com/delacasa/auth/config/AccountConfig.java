@@ -1,6 +1,8 @@
 package com.delacasa.auth.config;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
@@ -19,6 +21,12 @@ public class AccountConfig {
 	private final String rolesPrefix;
 	private final String categoryAuthorityPrefix;
 	private final String categoryRestrictionPrefix;
+	private final Map<String, String> status = new HashMap<>();
+
+	private final String statusOk;
+	private final String statusLockedAuth;
+	private final String statusLockedAdmin;
+	private final String statusBanned;
 
 	public String[] getStatusNames() {
 		return Arrays.copyOf(statusNames, statusNames.length);

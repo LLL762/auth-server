@@ -5,6 +5,7 @@ import javax.mail.MessagingException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -78,22 +79,22 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 		switch (account.getStatus().getName()) {
 
-			case "OK" -> {
+		case "OK" -> {
 
-			}
-			case "BANNED" -> {
-				throw new DisabledException("Account banned");
-			}
-			case "LOCKED_AUTH" -> {
-				// TO DO
-			}
-			case "LOCKED_ADMIN" -> {
+		}
+		case "BANNED" -> {
+			throw new DisabledException("Account banned");
+		}
+		case "LOCKED_AUTH" -> {
 
-				// TO DO
+		}
+		case "LOCKED_ADMIN" -> {
 
-			}
+			throw new LockedException("Account has been locked by an admin");
 
-			default -> throw new IllegalArgumentException();
+		}
+
+		default -> throw new IllegalArgumentException();
 		}
 
 	}
