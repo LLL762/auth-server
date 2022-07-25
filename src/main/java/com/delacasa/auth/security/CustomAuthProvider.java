@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.delacasa.auth.config.AppLoginConfig;
 import com.delacasa.auth.entity.Account;
+import com.delacasa.auth.entity.AccountStatus;
 import com.delacasa.auth.exception.TwoFAuthRequiredException;
 import com.delacasa.auth.mail.TotpEmailService;
 import com.delacasa.auth.service.AccountService;
@@ -40,14 +41,16 @@ public class CustomAuthProvider implements AuthenticationProvider {
 		final Account account = accountService.getAccountByUsernameOrMail(auth.getName())
 				.orElseThrow(() -> new BadCredentialsException("Username not found"));
 
+		final AccountStatus lockAuthStatus = statusService.getByName("LOCKED_AUTH").orElseThrow();
+
 		checkStatus(account);
 		checkPassword(auth.getCredentials(), account);
 
 		customAuthService.setUp(auth, account);
 
-		if (account.isTwoFactorAuth()) {
+		if (account.isTwoFactorAuth() || (account.getStatus().equals(lockAuthStatus))) {
 
-			account.setStatus(statusService.getByName("LOCKED_AUTH").orElseThrow());
+			account.setStatus(lockAuthStatus);
 			account.setFailedAttempt((byte) 0);
 
 			try {
@@ -75,22 +78,22 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 		switch (account.getStatus().getName()) {
 
-		case "OK" -> {
+			case "OK" -> {
 
-		}
-		case "BANNED" -> {
-			throw new DisabledException("Account banned");
-		}
-		case "LOCKED_AUTH" -> {
-			// TO DO
-		}
-		case "LOCKED_ADMIN" -> {
+			}
+			case "BANNED" -> {
+				throw new DisabledException("Account banned");
+			}
+			case "LOCKED_AUTH" -> {
+				// TO DO
+			}
+			case "LOCKED_ADMIN" -> {
 
-			// TO DO
+				// TO DO
 
-		}
+			}
 
-		default -> throw new IllegalArgumentException();
+			default -> throw new IllegalArgumentException();
 		}
 
 	}

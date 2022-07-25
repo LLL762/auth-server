@@ -1,9 +1,12 @@
 package com.delacasa.auth.security;
 
+import java.time.LocalDateTime;
+
 import javax.transaction.Transactional;
 
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -70,6 +73,11 @@ public class TotpAuthProvider implements AuthenticationProvider {
 	}
 
 	private void checkTotp(final String totp, final Account account) {
+
+		if (account.getTotpExpiration().isBefore(LocalDateTime.now())) {
+
+			throw new CredentialsExpiredException("expired!!");
+		}
 
 		if (!passwordEncoder.matches(totp, account.getTotp())) {
 
