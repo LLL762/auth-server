@@ -42,10 +42,10 @@ public class AccStatusConfig {
 
 		dbStatus = (List<AccountStatus>) repo.findAll();
 
-		ok = convert(config.getStatusOk());
-		lockedAuth = convert(config.getStatusLockedAuth());
-		lockedAdmin = convert(config.getStatusLockedAdmin());
-		banned = convert(config.getStatusBanned());
+		ok = convert(config.getStatus().get("ok"));
+		lockedAuth = convert(config.getStatus().get("locked-auth"));
+		lockedAdmin = convert(config.getStatus().get("locked-admin"));
+		banned = convert(config.getStatus().get("banned"));
 
 		hasInit = true;
 
@@ -55,7 +55,7 @@ public class AccStatusConfig {
 
 		final List<String> dbStatusNames = dbStatus.stream()
 				.map(AccountStatus::getName)
-				.toList();
+				.collect(Collectors.toList());
 		String msg;
 
 		for (final String statusName : config.getStatus().values()) {

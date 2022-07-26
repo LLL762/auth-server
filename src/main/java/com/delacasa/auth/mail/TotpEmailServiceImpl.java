@@ -51,7 +51,7 @@ public class TotpEmailServiceImpl implements TotpEmailService {
 				+ "One Time Password to login:</p>"
 				+ "<p><b>" + totp + "</b></p>"
 				+ "<br>"
-				+ "<a href=https://localhost:8080/totp/" + account.getId() + "> click </a>"
+				+ "<a href=http://localhost:8080/totp/" + account.getId() + "> click </a>"
 				+ "<p>Note: this OTP is set to expire in 5 minutes.</p>";
 
 	}

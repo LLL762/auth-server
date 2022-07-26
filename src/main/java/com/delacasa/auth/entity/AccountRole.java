@@ -17,7 +17,10 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Immutable;
 import org.springframework.data.annotation.ReadOnlyProperty;
@@ -58,6 +61,12 @@ public class AccountRole {
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "parent_id", nullable = true)
 	private AccountRole parent;
+
+	@Column(name = "access_level")
+	@NotNull
+	@Min(0)
+	@Max(100)
+	private byte accessLevel;
 
 	/**
 	 * Bi-directionnal one to many ,not owning side, uncommon usage. Could be empty.

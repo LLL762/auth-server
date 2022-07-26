@@ -55,7 +55,7 @@ public class Account {
 
 	@Column(name = "phone")
 	@NotBlank
-	@Size(min = 3, max = 18)
+	@Size(min = 3, max = 15)
 	@ReadOnlyProperty
 	private String phone;
 
@@ -71,7 +71,7 @@ public class Account {
 	@Column(name = "remaining_tries")
 	@Min(value = 0)
 	@Setter
-	private byte failedAttempt;
+	private int failedAttempt;
 
 	@Column(name = "remember_me")
 	@Setter
@@ -85,6 +85,7 @@ public class Account {
 
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "role_id")
+	@NotNull
 	@ReadOnlyProperty
 	private AccountRole role;
 
@@ -112,8 +113,11 @@ public class Account {
 	@UpdateTimestamp
 	private LocalDateTime latestEdit;
 
-	private String latestSucessIpV4;
-	private String latestSucessIpV6;
+	@Column(name = "lastest_success_ip")
+	private String latestSucessIp;
+
+	@Column(name = "lastest_faillure_ip")
+	private String latestFaillureIp;
 
 	@Override
 	public int hashCode() {

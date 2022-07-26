@@ -31,9 +31,6 @@ public class TotpController {
 	@PostMapping("/{id}")
 	public String post(@PathVariable String id, @RequestParam final String totp, HttpServletRequest req) {
 
-		System.out.println(totp);
-		System.out.println(id);
-
 		if (totp.length() != totpConfig.getTotpLength()) {
 
 			return "redirect:" + totpConfig.getTotpUrl() + "/" + id;

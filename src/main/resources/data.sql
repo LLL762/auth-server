@@ -1,5 +1,8 @@
 INSERT INTO account_status(id,name) VALUES (1,'OK'), (2,'LOCKED_AUTH'), (3,'LOCKED_ADMIN'), (4,'BANNED');
-INSERT INTO account_role(id,name) VALUES (1,'FREE_MEMBER'), (2,'PREMIUM_MEMBER'), (3,'MODERATOR'), (4,'ADMIN'), (5,'GOD');
+INSERT INTO account_role(id,name,access_level) VALUES (1,'FREE_MEMBER',0), (2,'PREMIUM_MEMBER',0), (3,'MODERATOR',20), (4,'ADMIN',60), (5,'GOD',100);
+
+
+
 
 /**
  password = rebecca

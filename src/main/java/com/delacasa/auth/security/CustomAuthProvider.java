@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.delacasa.auth.config.AccRoleConfig;
 import com.delacasa.auth.config.AccStatusConfig;
 import com.delacasa.auth.config.AppLoginConfig;
 import com.delacasa.auth.entity.Account;
@@ -31,6 +32,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
 	private final AppLoginConfig loginConfig;
 	private final AccStatusConfig statusConfig;
 	private final TotpEmailService totpEmailService;
+	private final AccRoleConfig roleConfig;
 
 	@Override
 	@Transactional(noRollbackFor = TwoFAuthRequiredException.class)
@@ -45,7 +47,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 		customAuthService.setUp(auth, account);
 
-		if (account.isTwoFactorAuth() || (account.getStatus().equals(statusConfig.getLockedAuth()))) {
+		if (shouldUseTwoFactorAuth(account)) {
 
 			account.setStatus(statusConfig.getLockedAuth());
 			account.setFailedAttempt((byte) 0);
@@ -75,23 +77,30 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 		switch (account.getStatus().getName()) {
 
-			case "OK" -> {
+		case "OK" -> {
 
-			}
-			case "BANNED" -> {
-				throw new DisabledException("Account banned");
-			}
-			case "LOCKED_AUTH" -> {
-
-			}
-			case "LOCKED_ADMIN" -> {
-
-				throw new LockedException("Account has been locked by an admin");
-
-			}
-
-			default -> throw new IllegalArgumentException();
 		}
+		case "BANNED" -> {
+			throw new DisabledException("Account banned");
+		}
+		case "LOCKED_AUTH" -> {
+
+		}
+		case "LOCKED_ADMIN" -> {
+
+			throw new LockedException("Account has been locked by an admin");
+
+		}
+
+		default -> throw new IllegalArgumentException();
+		}
+
+	}
+
+	private boolean shouldUseTwoFactorAuth(final Account account) {
+		return account.isTwoFactorAuth() ||
+				account.getStatus().equals(statusConfig.getLockedAuth()) ||
+				account.getRole().getAccessLevel() >= roleConfig.getModerator().getAccessLevel();
 
 	}
 
@@ -103,12 +112,32 @@ public class CustomAuthProvider implements AuthenticationProvider {
 		}
 	}
 
-	private void checkFailedAttempt(final String password, final Account account) {
+	private void checkFailedAttempt(final Account account) {
 
 		if (account.getFailedAttempt() > loginConfig.getMaxTries()) {
 
 			throw new BadCredentialsException("Invalid password");
 		}
+	}
+
+	private void failAuth(final Account account, final AuthenticationException authException) {
+
+		final int fail = account.getFailedAttempt() + 1;
+
+		account.setFailedAttempt(fail);
+
+		if (fail > loginConfig.getMaxTries()) {
+
+			account.setStatus(statusConfig.getLockedAdmin());
+			account.setFailedAttempt(0);
+			throw new LockedException("account is locked !");
+
+		}
+
+		accountService.save(account);
+
+		throw authException;
+
 	}
 
 }

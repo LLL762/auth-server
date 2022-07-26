@@ -18,13 +18,10 @@ public class AccountConfig {
 	private final String rolesPrefix;
 	private final String categoryAuthorityPrefix;
 	private final String categoryRestrictionPrefix;
-	private final Map<String, String> status = new HashMap<>();
-	private final Map<String, String> role = new HashMap<>();
 
-	private final String statusOk;
-	private final String statusLockedAuth;
-	private final String statusLockedAdmin;
-	private final String statusBanned;
+	private final Map<String, String> status;
+
+	private final Map<String, String> role = new HashMap<>();
 
 	private final String roleFree;
 	private final String rolePremium;

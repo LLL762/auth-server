@@ -16,6 +16,6 @@ public class AppLoginConfig {
 	private final String successUrl;
 	private final String twoFAuthRequiredUrl;
 	private final String mailRegex;
-	private final byte maxTries;
+	private final int maxTries;
 
 }
