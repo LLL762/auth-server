@@ -12,13 +12,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.delacasa.auth.config.AccStatusConfig;
 import com.delacasa.auth.config.AppLoginConfig;
 import com.delacasa.auth.entity.Account;
-import com.delacasa.auth.entity.AccountStatus;
 import com.delacasa.auth.exception.TwoFAuthRequiredException;
 import com.delacasa.auth.mail.TotpEmailService;
 import com.delacasa.auth.service.AccountService;
-import com.delacasa.auth.service.AccountStatusService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,7 +29,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
 	private final AccountService accountService;
 	private final CustomAuthService customAuthService;
 	private final AppLoginConfig loginConfig;
-	private final AccountStatusService statusService;
+	private final AccStatusConfig statusConfig;
 	private final TotpEmailService totpEmailService;
 
 	@Override
@@ -42,16 +41,14 @@ public class CustomAuthProvider implements AuthenticationProvider {
 		final Account account = accountService.getAccountByUsernameOrMail(auth.getName())
 				.orElseThrow(() -> new BadCredentialsException("Username not found"));
 
-		final AccountStatus lockAuthStatus = statusService.getByName("LOCKED_AUTH").orElseThrow();
-
 		checkStatus(account);
 		checkPassword(auth.getCredentials(), account);
 
 		customAuthService.setUp(auth, account);
 
-		if (account.isTwoFactorAuth() || (account.getStatus().equals(lockAuthStatus))) {
+		if (account.isTwoFactorAuth() || (account.getStatus().equals(statusConfig.getLockedAuth()))) {
 
-			account.setStatus(lockAuthStatus);
+			account.setStatus(statusConfig.getLockedAuth());
 			account.setFailedAttempt((byte) 0);
 
 			try {
@@ -79,22 +76,22 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 		switch (account.getStatus().getName()) {
 
-		case "OK" -> {
+			case "OK" -> {
 
-		}
-		case "BANNED" -> {
-			throw new DisabledException("Account banned");
-		}
-		case "LOCKED_AUTH" -> {
+			}
+			case "BANNED" -> {
+				throw new DisabledException("Account banned");
+			}
+			case "LOCKED_AUTH" -> {
 
-		}
-		case "LOCKED_ADMIN" -> {
+			}
+			case "LOCKED_ADMIN" -> {
 
-			throw new LockedException("Account has been locked by an admin");
+				throw new LockedException("Account has been locked by an admin");
 
-		}
+			}
 
-		default -> throw new IllegalArgumentException();
+			default -> throw new IllegalArgumentException();
 		}
 
 	}

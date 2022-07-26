@@ -13,9 +13,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.delacasa.auth.config.AccStatusConfig;
 import com.delacasa.auth.entity.Account;
 import com.delacasa.auth.service.AccountService;
-import com.delacasa.auth.service.AccountStatusService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +26,7 @@ public class TotpAuthProvider implements AuthenticationProvider {
 	private final AccountService accountService;
 	private final CustomAuthService customAuthService;
 	private final PasswordEncoder passwordEncoder;
-	private final AccountStatusService statusService;
+	private final AccStatusConfig statusConfig;
 
 	@Override
 	@Transactional
@@ -50,7 +50,7 @@ public class TotpAuthProvider implements AuthenticationProvider {
 
 	private void cleanAccount(final Account account) {
 
-		account.setStatus(statusService.getByName("OK").orElseThrow());
+		account.setStatus(statusConfig.getOk());
 		account.setTotp(null);
 		account.setTotpExpiration(null);
 		account.setTotpIp(null);
@@ -64,7 +64,7 @@ public class TotpAuthProvider implements AuthenticationProvider {
 
 	private void checkStatus(final Account account) {
 
-		if (!account.getStatus().equals(statusService.getByName("LOCKED_AUTH").orElseThrow())) {
+		if (!account.getStatus().equals(statusConfig.getLockedAuth())) {
 
 			throw new DisabledException("wrong status");
 

@@ -1,6 +1,5 @@
 package com.delacasa.auth.config;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,24 +15,21 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class AccountConfig {
 
-	private final String[] statusNames;
-	private final String[] rolesNames;
 	private final String rolesPrefix;
 	private final String categoryAuthorityPrefix;
 	private final String categoryRestrictionPrefix;
 	private final Map<String, String> status = new HashMap<>();
+	private final Map<String, String> role = new HashMap<>();
 
 	private final String statusOk;
 	private final String statusLockedAuth;
 	private final String statusLockedAdmin;
 	private final String statusBanned;
 
-	public String[] getStatusNames() {
-		return Arrays.copyOf(statusNames, statusNames.length);
-	}
-
-	public String[] getrolesNames() {
-		return Arrays.copyOf(rolesNames, rolesNames.length);
-	}
+	private final String roleFree;
+	private final String rolePremium;
+	private final String roleModerator;
+	private final String roleAdmin;
+	private final String roleGod;
 
 }
