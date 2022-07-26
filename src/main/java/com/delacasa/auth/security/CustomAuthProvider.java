@@ -37,7 +37,6 @@ public class CustomAuthProvider implements AuthenticationProvider {
 	public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
 
 		final CustomAuth auth = (CustomAuth) authentication;
-
 		final Account account = accountService.getAccountByUsernameOrMail(auth.getName())
 				.orElseThrow(() -> new BadCredentialsException("Username not found"));
 
