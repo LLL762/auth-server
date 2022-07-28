@@ -68,10 +68,10 @@ public class Account {
 	@Column(name = "has_multi_factor_auth")
 	private boolean twoFactorAuth;
 
-	@Column(name = "remaining_tries")
+	@Column(name = "failed_attempt", nullable = false, columnDefinition = "int default 0")
 	@Min(value = 0)
 	@Setter
-	private int failedAttempt;
+	private int failedAttempt = 0;
 
 	@Column(name = "remember_me")
 	@Setter

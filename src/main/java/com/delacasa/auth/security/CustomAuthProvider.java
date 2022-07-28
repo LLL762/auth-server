@@ -21,9 +21,11 @@ import com.delacasa.auth.mail.TotpEmailService;
 import com.delacasa.auth.service.AccountService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class CustomAuthProvider implements AuthenticationProvider {
 
 	private final PasswordEncoder encoder;
@@ -35,7 +37,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
 	private final AccRoleConfig roleConfig;
 
 	@Override
-	@Transactional(noRollbackFor = TwoFAuthRequiredException.class)
+	@Transactional(noRollbackFor = AuthenticationException.class)
 	public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
 
 		final CustomAuth auth = (CustomAuth) authentication;
@@ -50,7 +52,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
 		if (shouldUseTwoFactorAuth(account)) {
 
 			account.setStatus(statusConfig.getLockedAuth());
-			account.setFailedAttempt((byte) 0);
+			account.setFailedAttempt(0);
 
 			try {
 				totpEmailService.sendCode(account, auth);
@@ -77,22 +79,22 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 		switch (account.getStatus().getName()) {
 
-		case "OK" -> {
+			case "OK" -> {
 
-		}
-		case "BANNED" -> {
-			throw new DisabledException("Account banned");
-		}
-		case "LOCKED_AUTH" -> {
+			}
+			case "BANNED" -> {
+				throw new DisabledException("Account banned");
+			}
+			case "LOCKED_AUTH" -> {
 
-		}
-		case "LOCKED_ADMIN" -> {
+			}
+			case "LOCKED_ADMIN" -> {
 
-			throw new LockedException("Account has been locked by an admin");
+				throw new LockedException("Account has been locked by an admin");
 
-		}
+			}
 
-		default -> throw new IllegalArgumentException();
+			default -> throw new IllegalArgumentException();
 		}
 
 	}
@@ -108,7 +110,8 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 		if (!encoder.matches(password, account.getPassword())) {
 
-			throw new BadCredentialsException("Invalid password");
+			failAuth(account, new BadCredentialsException("Invalid password"));
+
 		}
 	}
 
@@ -130,6 +133,8 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 			account.setStatus(statusConfig.getLockedAdmin());
 			account.setFailedAttempt(0);
+
+			log.warn("");
 			throw new LockedException("account is locked !");
 
 		}

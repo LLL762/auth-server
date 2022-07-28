@@ -42,11 +42,11 @@ public class AccRoleConfig {
 
 		dbRoles = (List<AccountRole>) repo.findAll();
 
-		free = convert(config.getRoleFree());
-		premium = convert(config.getRolePremium());
-		moderator = convert(config.getRoleModerator());
-		admin = convert(config.getRoleAdmin());
-		god = convert(config.getRoleGod());
+		free = convert(config.getRoles().get("free"));
+		premium = convert(config.getRoles().get("premium"));
+		moderator = convert(config.getRoles().get("moderator"));
+		admin = convert(config.getRoles().get("admin"));
+		god = convert(config.getRoles().get("god"));
 
 		hasInit = true;
 
@@ -56,10 +56,10 @@ public class AccRoleConfig {
 
 		final List<String> dbStatusNames = dbRoles.stream()
 				.map(AccountRole::getName)
-				.toList();
+				.collect(Collectors.toList());
 		String msg;
 
-		for (final String statusName : config.getRole().values()) {
+		for (final String statusName : config.getRoles().values()) {
 
 			if (!dbStatusNames.remove(statusName)) {
 

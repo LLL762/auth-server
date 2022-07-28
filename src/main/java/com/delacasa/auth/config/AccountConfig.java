@@ -1,6 +1,5 @@
 package com.delacasa.auth.config;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -20,13 +19,6 @@ public class AccountConfig {
 	private final String categoryRestrictionPrefix;
 
 	private final Map<String, String> status;
-
-	private final Map<String, String> role = new HashMap<>();
-
-	private final String roleFree;
-	private final String rolePremium;
-	private final String roleModerator;
-	private final String roleAdmin;
-	private final String roleGod;
+	private final Map<String, String> roles;
 
 }
